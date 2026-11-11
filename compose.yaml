@@ -1,0 +1,41 @@
+# AI workshop day - ONE IRIS container for all three modules.
+#   docker compose up -d       start
+#   docker compose down        stop (your work stays)
+#   docker compose down -v     stop and delete ALL your work, in all three modules (next start is fresh)
+# Login: _SYSTEM / SYS
+#
+#   Module 1 (agentic development, AIB)  namespaces USER and AI
+#   Module 2 (AI Hub)                    namespace IRISAPP
+#   Module 3 (vector search & RAG)       namespace VECTOR
+name: aiworkshop
+
+services:
+  iris:
+    image: ${IMAGE:-ghcr.io/ari-glikman/ai-workshop-day:2026-11-11.1}
+    container_name: aiworkshop-iris
+    # The image was set up on a machine called "buildkitsandbox"; with any other name IRIS reports a fail-over
+    # alert and the container turns unhealthy after a few minutes.
+    hostname: buildkitsandbox
+    init: true
+    command: ["--check-caps", "false", "--after", "/workshop/setup/start-jupyter.sh"]
+    ports:
+      - "127.0.0.1:42773:52773"   # Management Portal, VS Code, iris-agentic-dev, AIB: http://127.0.0.1:42773/csp/sys/UtilHome.csp
+      - "127.0.0.1:41972:1972"    # superserver (SQL clients, optional)
+      - "127.0.0.1:48080:8080"    # module 2: the MCP bridge (iris-mcp-server), once you start it
+      - "127.0.0.1:48888:8888"    # module 3: Jupyter, http://127.0.0.1:48888/?token=workshop
+    environment:
+      ISC_DATA_DIRECTORY: /durable/irissys    # all IRIS data lives on the volume below, so your work survives restarts
+    env_file:
+      - path: .env                            # module 2: AI_PROVIDER / AI_MODEL / API key (optional, see .env.example)
+        required: false
+    dns:                                      # outbound LLM calls
+      - ${DNS_SERVER:-8.8.8.8}
+      - 1.1.1.1
+    volumes:
+      - iris-durable:/durable
+      - ./module2-aihub/src:/home/irisowner/dev                                  # module 2: the files you edit
+      - ./module2-aihub/config_http.toml:/home/irisowner/config_http.toml:ro     # module 2: MCP bridge settings
+    stop_grace_period: 60s        # lets IRIS shut down cleanly
+
+volumes:
+  iris-durable:

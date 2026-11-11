@@ -1,0 +1,15 @@
+{
+  // Open the module3-vector folder of the workshop repository in VS Code with the "InterSystems ObjectScript Extension Pack".
+  // It connects to the workshop IRIS; when asked for a password, type SYS.
+  // Saving a .cls file sends it to IRIS and compiles it (namespace VECTOR).
+  "intersystems.servers": {
+    "workshop": {
+      "webServer": { "scheme": "http", "host": "127.0.0.1", "port": 42773 },
+      "username": "_SYSTEM",
+      "description": "IRIS Vector Search workshop (local container)"
+    }
+  },
+  "objectscript.conn": { "server": "workshop", "ns": "VECTOR", "active": true },
+  "objectscript.export": { "folder": "exercises", "addCategory": false },
+  "objectscript.compileOnSave": true
+}

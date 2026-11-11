@@ -1,0 +1,37 @@
+{
+  "//": "AI Hub workshop — VS Code ObjectScript connection.",
+  "//1": "The image has its own web server on 52773, published on the host as 42773",
+  "//2": "(docker-compose.yml remaps it; 52773 collides too often to publish as-is).",
+  "//3": "NOTE: this does NOT use the extension's `docker-compose` auto-discovery,",
+  "//4": "which the InterSystems dev template uses. Auto-discovery reads the port",
+  "//5": "mapping itself and breaks as soon as a student overrides PORT_WEB in .env,",
+  "//6": "so the connection is an explicit host and port. Change both together.",
+
+  "files.associations": {
+    "Dockerfile*": "dockerfile",
+    "iris.script": "objectscript",
+    "*.cpf": "ini"
+  },
+
+  "objectscript.conn": {
+    "active": false,
+    "host": "localhost",
+    "port": 42773,
+    "ns": "IRISAPP",
+    "username": "_SYSTEM",
+    "password": "SYS",
+    "https": false,
+    "links": {
+      "Management Portal": "${serverUrl}/csp/sys/UtilHome.csp",
+      "Production Config": "${serverUrl}/csp/healthshare/irisapp/EnsPortal.ProductionConfig.zen",
+      "Message Viewer": "${serverUrl}/csp/healthshare/irisapp/EnsPortal.MessageViewer.zen",
+      "Event Log": "${serverUrl}/csp/healthshare/irisapp/EnsPortal.EventLog.zen",
+      "Workflow Tasks": "${serverUrl}/csp/healthshare/irisapp/EnsPortal.WFTasklist.zen"
+    }
+  },
+
+  "objectscript.export": {
+    "folder": "src",
+    "addCategory": false
+  }
+}

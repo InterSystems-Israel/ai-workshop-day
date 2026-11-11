@@ -1,0 +1,11 @@
+.ipynb_checkpoints/
+__pycache__/
+.env
+~$*
+*.key
+*.int
+*.obj
+*.log
+*.tar
+*.tar.gz
+*.tgz

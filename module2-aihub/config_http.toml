@@ -1,0 +1,36 @@
+# ---------------------------------------------------------------------------
+# iris-mcp-server — HTTP transport, AI Hub workshop
+#
+# Run INSIDE the iris container, where the binary already lives:
+#   docker exec -d aiworkshop-iris /usr/irissys/bin/iris-mcp-server \
+#       --config=/home/irisowner/dev/../config_http.toml run
+#
+# The bridge reaches IRIS over wgproto on 1972 — the SUPERSERVER, not HTTP.
+# That is why MCP-over-HTTP needs no web server at all, and why port 8080 is
+# nothing to do with port 52773.
+# ---------------------------------------------------------------------------
+
+[[iris]]
+name = "local"
+# host is localhost because this process runs inside the iris container.
+server = { host = "localhost", port = 1972, username = "SuperUser", password = "SYS" }
+pool = { min = 2, max = 5 }
+# Each path must match a Security.Applications entry with Type=18.
+endpoints = [
+    { path = "/mcp/oncall" },
+]
+
+[mcp]
+transport = "http"
+host = "0.0.0.0"
+port = 8080
+# CLASSROOM SHORTCUT: no auth on the MCP listener, paired with
+# AutheEnabled=64 on the IRIS application. In production, set Password or
+# OAuth 2.0 on the application and drop this.
+allow_anonymous = true
+
+[logging]
+level = "debug"
+# Only "stderr" or "file" are accepted here. "stdout" is rejected outright:
+#   unknown variant `stdout`, expected `stderr` or `file`
+output = "stderr"

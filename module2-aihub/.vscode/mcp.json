@@ -1,0 +1,18 @@
+{
+  "//": "Point VS Code's MCP client at the workshop's IRIS MCP server.",
+  "//1": "Start the bridge first:",
+  "//2": "  docker exec -d aiworkshop-iris /usr/irissys/bin/iris-mcp-server \\",
+  "//3": "      --config=/home/irisowner/config_http.toml run",
+  "//4": "THE URL PATH IS /mcp, not /mcp/oncall. The endpoint path configured in",
+  "//5": "config_http.toml names the IRIS application and prefixes every tool name",
+  "//6": "(mcp_oncall_RecentErrors), but it does NOT appear in the URL.",
+  "//7": "48080 is the host port mapped to the bridge's 8080.",
+
+  "servers": {
+    "iris-oncall": {
+      "type": "http",
+      "url": "http://localhost:48080/mcp"
+    }
+  },
+  "inputs": []
+}
