@@ -1,8 +1,11 @@
 ﻿# AI workshop day - readiness check. Run once after "git clone", before the workshop day:
 #     powershell -ExecutionPolicy Bypass -File .\check.ps1
 # Checks your laptop (Docker, git, VS Code extensions, ports, your module 1 prework), starts the ONE workshop container
-# all three modules use, then checks IRIS, the namespaces of the three modules, the notebook kernel and the internet
-# connections the exercises need. Ends with READY or what to fix. It installs nothing and changes nothing on your laptop.
+# all three modules use, then checks IRIS, the namespaces of the three modules, module 2's own ten-point gate, the
+# notebook kernel and the internet connections the exercises need. Ends with READY or what to fix. It installs nothing
+# and changes nothing on your laptop.
+# Three states: OK, WARN and FAIL. Only FAIL stops you being READY - module 2's provider checks report WARN until you
+# have the API key, which is handed out on the day.
 # The container keeps running afterwards; stop it with: docker compose down
 $ErrorActionPreference = "Continue"
 Set-Location $PSScriptRoot
@@ -93,6 +96,31 @@ if ($dockerOk) {
             $ns = ('for n="USER","AI","IRISAPP","VECTOR" { write "NS ",n," ",##class(%SYS.Namespace).Exists(n),! }' + "`nhalt`n") | docker exec -i aiworkshop-iris iris session IRIS -U %SYS 2>$null | Out-String
             foreach ($n in @(@("USER", "module 1"), @("AI", "module 1"), @("IRISAPP", "module 2"), @("VECTOR", "module 3"))) {
                 if ($ns -match "NS $($n[0]) 1") { Ok "namespace $($n[0]) ($($n[1]))" } else { Fail "namespace $($n[0]) ($($n[1]))" "missing - run 'docker compose down -v', then check.ps1 again" }
+            }
+            # Module 2 has its own gate compiled into the image: ten checks in three
+            # states. Rather than repeat any of them here, run it and translate.
+            # WAIT is NOT a problem - it means "this one needs the API key you are
+            # given on the day", which is the expected state before the workshop.
+            # Check 7 makes one real model call, so this adds a few seconds when a
+            # key is present. Nothing it does changes the lab state.
+            $v2 = ('do ##class(Workshop.Verify).Run()' + "`nhalt`n") | docker exec -i aiworkshop-iris iris session IRIS -U IRISAPP 2>$null | Out-String
+            $gate = @()
+            foreach ($line in ($v2 -split "`r?`n")) {
+                if ($line -match '^\s*(OK|WAIT|FAIL)\s\s*(\S.*?)\s*$') { $gate += [pscustomobject]@{ State = $matches[1]; What = $matches[2]; Why = "" } }
+                elseif ($gate.Count -gt 0 -and $line -match '^\s*->\s*(\S.*?)\s*$') { $gate[-1].Why = $matches[1] }
+            }
+            if ($gate.Count -eq 0) {
+                Fail "module 2 gate (Workshop.Verify)" "it produced no result - run 'docker exec -it aiworkshop-iris iris session IRIS -U IRISAPP', then 'do ##class(Workshop.Verify).Run()', and bring the output to the workshop"
+            } else {
+                foreach ($g in $gate) {
+                    $what = "module 2: $($g.What)"
+                    if ($g.State -eq "OK") { Ok $what }
+                    elseif ($g.State -eq "WAIT") { Warn ($what + $(if ($g.Why) { " - $($g.Why)" } else { "" })) }
+                    else { Fail $what $(if ($g.Why) { $g.Why } else { "see module2-aihub/docs/TROUBLESHOOTING.md, which has a section per check" }) }
+                }
+                if ($gate | Where-Object { $_.State -eq "WAIT" }) {
+                    Write-Host "     WAIT is fine before the day: those need the API key you get at the workshop. FAIL is not." -ForegroundColor Yellow
+                }
             }
             docker exec -e IRISNAMESPACE=VECTOR aiworkshop-iris /usr/irissys/bin/irispython /workshop/setup/selfcheck.py 2>$null | ForEach-Object {
                 if ($_ -match "^OK ") { Write-Host $_ -ForegroundColor Green }

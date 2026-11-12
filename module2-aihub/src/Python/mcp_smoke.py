@@ -14,11 +14,14 @@ HTTP URL. It does, however, prefix every tool NAME.
 """
 
 import json
+import os
 import sys
 import urllib.error
 import urllib.request
 
-URL = "http://localhost:48080/mcp"
+# 48080 is the host port compose.yaml publishes. Override with MCP_URL if you
+# changed it, or if something else on your laptop already owns that port.
+URL = os.environ.get("MCP_URL", "http://localhost:48080/mcp")
 PROTOCOL_VERSION = "2025-06-18"
 
 _session_id = None

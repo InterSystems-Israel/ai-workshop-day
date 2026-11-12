@@ -50,7 +50,8 @@ do ##class(Workshop.Lab).Reset()             // back to the beginning
 ```
 
 Later exercises build on earlier ones, so if you want to skip one and keep up, `SolveThrough` loads
-its prerequisites in the right order. Use it — falling behind on C1 should not cost you Module D.
+its prerequisites in the right order. Use it — falling behind on C.1 should not cost you C.5, which
+is the point the module builds to.
 
 The solutions live inside the container, not in this repository, so a coding assistant pointed at
 this folder cannot read them and quietly do the exercise for you.
