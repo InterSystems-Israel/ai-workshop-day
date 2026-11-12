@@ -710,14 +710,40 @@ Reload the Codex window so it picks up the change, then **ask it in the chat**:
 
 > what tools does my iris-oncall mcp server have?
 
-**Expected result:** four tools, all prefixed `mcp_oncall_`:
+**Expected result:** **six** tools, all prefixed `mcp_oncall_`:
 
 ```
 mcp_oncall_RecentErrors
 mcp_oncall_FailedMessages
 mcp_oncall_DraftIncidentNote
 mcp_oncall_RestartHost
+mcp_oncall_lookup_runbook
+mcp_oncall_list_runbooks
 ```
+
+**Count them, because the last two are the interesting part.** Those are the Python tools you
+attached in B.2.2, and they have arrived here carrying the same `mcp_oncall_` prefix as the
+ObjectScript ones. Nothing in that list tells Codex — or you — which tools are ObjectScript methods
+and which are a Python process this instance starts on demand.
+
+> **Note — this is not what `%Discover()` told you.** In B.2.2 the local listing showed five
+> entries, the fifth being a single `OnCallPy` placeholder with `source: mcp`, and the Python tool
+> names were deliberately absent. Over MCP you get the opposite: no `OnCallPy`, and the two real
+> tool names instead. The MCP service resolves the nested server when a client asks what is
+> available; `%Discover()` does not, because nothing has needed the child process yet.
+
+> **If you see four**, there are two possibilities. Either you have not done B.2.2, or your
+> instructor cut it — that is a correct result for that state, the four ObjectScript tools, and the
+> rest of this exercise works the same way. Or **your bridge was already running before you
+> compiled B.2.2**: the bridge caches what it discovered at startup, so it will keep reporting four
+> indefinitely. Restart it and ask again:
+>
+> ```bash
+> docker exec aiworkshop-iris pkill -f iris-mcp-server
+> ```
+> ```bash
+> docker exec -d aiworkshop-iris /usr/irissys/bin/iris-mcp-server --config=/home/irisowner/config_http.toml run
+> ```
 
 > **Note — the URL path is `/mcp`, not `/mcp/oncall`.** The endpoint path names the IRIS application
 > and becomes a prefix on the tool *names*; it is not part of the URL. Both the port and the path

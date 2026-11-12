@@ -443,7 +443,8 @@ Work through these in order; the first three cover almost everything.
    ```bash
    python module2-aihub/src/Python/mcp_smoke.py
    ```
-   If that lists four tools, the problem is in Codex's configuration. If it does not, the problem is
+   If that lists your tools — four from the start state, six once Exercise B.2.2 has attached the
+   Python server — then the problem is in Codex's configuration. If it lists nothing, the problem is
    the bridge or IRIS, and the sections above apply.
 
 ### Codex lists only one tool, called iris_status
