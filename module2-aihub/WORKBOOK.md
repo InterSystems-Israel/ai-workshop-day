@@ -8,6 +8,13 @@ Every exercise here tells you the file to open, the exact code to run, and what 
 something does not match, [`docs/TROUBLESHOOTING.md`](docs/TROUBLESHOOTING.md) has a section per
 failure.
 
+> **What we will cover together: Exercise 0, then A, B and C.** Exercise C is the end of the taught
+> part, and the point the whole module builds to.
+>
+> **Module D is optional and we will not reach it.** It is left in, complete and tested, for you to
+> do on your own afterwards — the container and this book are yours to keep. Do not feel behind
+> because you did not get there; nobody will.
+
 ## How to read a step
 
 | Marker | Meaning |
@@ -165,12 +172,35 @@ do ##class(Workshop.Verify).Run()
 
 ### 0.4 — connect VS Code
 
-**Do this:** open this folder in VS Code and let the InterSystems ObjectScript extension connect. The
-connection is already written in `.vscode/settings.json`: `localhost`, port **42773**, namespace
-`IRISAPP`, `_SYSTEM` / `SYS`.
+**Open the `module2-aihub` folder itself**, not the repository root. This matters: the connection is
+defined in `module2-aihub/.vscode/settings.json`, and the repository root has no ObjectScript
+settings at all. If you open `ai-workshop-day`, VS Code has nothing to connect with and nothing in
+this step will work.
 
-**Expected result:** the ObjectScript explorer lists the `Workshop` package, and you can open
-`src/Workshop/Agent/OnCall.cls`.
+In VS Code: **File → Open Folder…** and pick `...\ai-workshop-day\module2-aihub`.
+
+**Now look at the status bar** along the bottom of the VS Code window, where you will see the word
+**ObjectScript**. One of two things is true:
+
+| What you see | What to do |
+|---|---|
+| **`localhost:42773[IRISAPP]`** | Nothing. You are connected. |
+| **ObjectScript** with a **warning triangle** next to it | Click it. A menu opens at the *top* of the window; choose **Toggle Connection**. |
+
+After **Toggle Connection**, the status bar stops showing the triangle and reads
+**`localhost:42773[IRISAPP]`** instead. That is the connection being live.
+
+**Expected result:** the status bar reads `localhost:42773[IRISAPP]`, the **ObjectScript Explorer**
+lists the `Workshop` package, and you can open `src/Workshop/Agent/OnCall.cls` from it.
+
+> **The connection details are already written for you** — `localhost`, port **42773**, namespace
+> `IRISAPP`, `_SYSTEM` / `SYS`. You never have to type them. Port 42773 rather than the usual 52773
+> because the container publishes it there, which is also why the extension's Docker auto-discovery
+> is not used.
+
+> **GATE:** open `src/Workshop/Agent/OnCall.cls`, change a comment, save it, and watch it compile in
+> the **Output** panel. If the save does not compile, you are not really connected — go back to the
+> status bar. Everything from Exercise A onward depends on this working.
 
 ### 0.5 — write down your answer to this
 
@@ -178,7 +208,7 @@ Before you write any code:
 
 > **Name two things you would require before letting an agent restart a production host on its own.**
 
-Keep it. You will be asked for it at the end.
+Keep it. You will be asked for it at the end of Exercise C.
 
 ---
 
@@ -926,7 +956,7 @@ and lives as long as it does. Two consequences worth carrying out of the room:
 `%CanExecute()`. It currently refuses every guarded tool unconditionally. Your job is to refuse only
 the ones a human has not approved.
 
-#### First, see what you are given
+#### What you are given
 
 `%CanExecute()` receives three arguments:
 
@@ -934,53 +964,78 @@ the ones a human has not approved.
 Method %CanExecute(toolref As %String, call As %DynamicObject, metadata As %DynamicObject) As %Status
 ```
 
-`toolref` is the tool name. `call` is the model's actual request. Before writing any logic, look at
-it — add this line as the first line inside the `If $Find(toolref, guarded) {` block, compile, and
-run the C.4 denial command below:
-
-```objectscript
-Write !, "call = ", call.%ToJSON(), !
-```
-
-**Expected result:**
+`toolref` is the tool name. `call` is the model's actual request, and this is what it contains —
+captured from a real run, so you do not have to go and look:
 
 ```
 call = {"arguments":{"configName":"HL7Router"},"id":"call_id","name":"RestartHost"}
 ```
 
-So `call` has three keys, and the one you want is inside `arguments`: the host the agent is asking
-you to restart. `call.arguments` is itself a `%DynamicObject`.
-
-#### Reading a key out of it
-
-A `%DynamicObject` is read with `%Get()`:
-
-```objectscript
-Set configName = call.arguments.%Get("configName")
-```
+Three keys, and the one you want is inside `arguments`: the host the agent is asking you to restart.
+`call.arguments` is itself a `%DynamicObject`, so you read it with `%Get()`.
 
 > **Common error — `$Get()` does not work here and does not complain.**
 > `$Get(call.arguments.configName)` returns an **empty string** rather than erroring. If your policy
-> then treats "no host supplied" as a refusal you get a plausible-looking denial for the wrong
+> then treats "no host supplied" as a refusal, you get a plausible-looking denial for the wrong
 > reason; if it treats it as a pass, you have a gate that approves everything. Use `%Get()`.
 
-Take the `Write` line back out once you have seen it. A policy that writes to the current device
-breaks every `tools/call` over MCP, because during an HTTP request that device is the response body.
+> **Do not add a `Write` to this method to inspect `call` yourself.** A policy that writes to the
+> current device breaks every `tools/call` over MCP: during an HTTP request that device *is* the
+> response body, and the client gets a JSON parse error instead of a result. That is why the output
+> above is printed here rather than left for you to discover.
 
-#### Now write the check
+#### First, delete the two lines you are replacing
 
-1. **Read the host** from `call` as above.
-2. **Decide what to do when it is missing.** The agent supplies this value, so it may be absent or
-   wrong. Refusing is the safe answer; say why in the message.
-3. **Ask the ledger** whether this host is approved for this action:
-   `##class(Workshop.Data.Approval).IsApproved(configName, guarded)`.
-4. **Return `$$$OK`** when approved. Otherwise return
-   `$$$ERROR($$$GeneralError, msg)` with a message that **names the host** — you will be reading
-   that message in C.4, and "denied" on its own tells you nothing.
+At the bottom of the `If $Find(toolref, guarded) {` block:
 
-**The requirement that makes this a security control rather than a feature:** scope the check to the
-host as well as the action. An approval to restart `HL7Router` must not authorise restarting
-`LabOperation`. C.4 tests exactly that, so if you skip it the next step will catch you.
+```objectscript
+Set msg = "DENIED: '"_guarded_"' requires a human approval row. Draft the change and ask the on-call engineer to approve it."
+Return $$$ERROR($$$GeneralError, msg)
+```
+
+**Delete both.** They are the unconditional refusal — the thing this exercise replaces. If you leave
+them in and add your check above them, that `Return` still runs on every guarded call, your approval
+check becomes dead code, and `RestartHost` stays refused even after a human approves it. It looks
+exactly like a gate that does not work, and it is the most common way to lose ten minutes on this
+step. The wording is not lost: it reappears below, inside the `If` that actually decides.
+
+#### Then write this
+
+```objectscript
+// Which host is this call about? The agent supplies it, so treat it as
+// untrusted: an approval for HL7Router must not authorise LabOperation.
+Set configName = ""
+If $IsObject(call), call.%IsDefined("arguments"), $IsObject(call.arguments) {
+    Set configName = call.arguments.%Get("configName")
+}
+
+If configName = "" {
+    Set msg = "DENIED: '"_guarded_"' needs a configName so the approval can be checked against a specific host."
+    Return $$$ERROR($$$GeneralError, msg)
+}
+
+If '##class(Workshop.Data.Approval).IsApproved(configName, guarded) {
+    Set msg = "DENIED: '"_guarded_"' on '"_configName_"' has no APPROVED row in Workshop.Data.Approval. Draft the change and ask the on-call engineer to approve it."
+    Return $$$ERROR($$$GeneralError, msg)
+}
+// Approved. Fall through to the Return $$$OK at the end of the method.
+```
+
+Compile it.
+
+**Three things in there are deliberate, and worth a moment:**
+
+- **The check is scoped to the host, not just the action.** This is what makes it a security control
+  rather than a feature. An approval to restart `HL7Router` must not authorise restarting
+  `LabOperation` — and C.4 tests exactly that, so a gate that only checks the action name will be
+  caught in the next step.
+- **A missing `configName` is a refusal, not a pass.** The agent supplies that value, so it can be
+  absent or wrong. "I could not tell which host" is not permission.
+- **The guards around `call` and `arguments` are not ceremony.** A policy that throws takes the whole
+  tool call down with it, and you would be debugging your gate instead of the agent.
+
+Both refusal messages **name the host**. You will be reading them in C.4, where "denied" on its own
+would tell you nothing.
 
 The ledger class is supplied. Its API:
 
@@ -989,26 +1044,6 @@ The ledger class is supplied. Its API:
 ##class(Workshop.Data.Approval).Request(configName, action, why) // returns an id
 ##class(Workshop.Data.Approval).Approve(id)                      // marks it APPROVED
 ```
-
-<details>
-<summary>Stuck on the shape of it? The two lines that matter</summary>
-
-```objectscript
-Set configName = ""
-If $IsObject(call), call.%IsDefined("arguments"), $IsObject(call.arguments) {
-    Set configName = call.arguments.%Get("configName")
-}
-If configName = "" {
-    Return $$$ERROR($$$GeneralError, "DENIED: '"_guarded_"' needs a configName to check against.")
-}
-If '##class(Workshop.Data.Approval).IsApproved(configName, guarded) {
-    Return $$$ERROR($$$GeneralError, "DENIED: '"_guarded_"' on '"_configName_"' has no APPROVED row.")
-}
-```
-
-The guards around `call` and `arguments` are not ceremony: a policy that throws takes the whole tool
-call down with it, and you would be debugging your gate rather than the agent.
-</details>
 
 ### C.4 — test the gate in both directions
 
@@ -1125,8 +1160,9 @@ IRISAPP> write ts.%Invoke("RestartHost", {"configName":"LabOperation"}).%ToJSON(
 ```
 
 In this workshop `RestartHost` is a stub, so nothing actually restarted. In your system it would
-have. You will measure this yourself in **D.2.2**, where the same call also turns out to leave no
-audit row behind it.
+have. There is a second half to this finding, in the optional **D.2.2**: the same call leaves no
+audit row either, so the bypass is not just unauthorised but invisible to any review built on that
+table. You do not need to run it to take the point.
 
 **The conclusion, which is the argument the whole workshop exists to make:** everything you expose to
 an agent, you have also exposed to any ObjectScript in the instance that calls `%Invoke()`. The
@@ -1144,6 +1180,45 @@ work against the other.
 > **Note.** From here on you may use the agentic development tooling from Part 1 to write this code
 > rather than typing it. This book gives the requirement; the `ai-hub-policies` skill covers the
 > implementation.
+
+### C.6 — the question from 0.5
+
+Read out what you wrote at the start, before any of this existed:
+
+> *Name two things you would require before letting an agent restart a production host on its own.*
+
+Whatever you wrote, you have almost certainly built it in the last hour. The two that come up most
+often in that room are **a human has to approve the specific action** and **the agent must not be
+able to go around the control** — which are C.3 together with C.4, and C.5 respectively.
+
+And if what you wrote was closer to *"I want a record of what it did"* or *"the credentials must not
+sit in the agent's source"*, those are real answers too, and they are the optional Module D below.
+Both are built; neither takes long on your own.
+
+**The one sentence to leave with:** governance is a property of the execution path, not of the
+ToolSet. You can attach a perfect policy and still be wide open, and nothing in the API will tell
+you.
+
+---
+
+# Module D — optional, and not covered on the day
+
+**We will not do Module D together.** There is not enough time in the day for it, and we would
+rather finish Modules A to C properly than rush all four. Nothing below is cut from the material:
+the three exercises are complete, tested, and written to be done on your own afterwards, in the same
+container, at your own pace.
+
+What you would be doing, and why it is worth coming back for:
+
+| | What it adds |
+|---|---|
+| **D.1** | The API key leaves your source entirely — Config Store and a Wallet, with a real IRIS resource controlling who can read it. |
+| **D.2** | An audit trail: one row per governed tool call, and the discovery that the `%Invoke()` bypass from C.5 leaves *no* row at all. |
+| **D.3** | The agent running as a business operation inside an interoperability production, raising a task in a human's worklist. Supplied complete — you run it rather than write it. |
+
+Your container does not expire and neither does this book. `./module2-aihub/reset-lab.sh --status`
+tells you where you left off, and `SolveThrough("D.1.2")` will catch you up to any point if you want
+to skip ahead.
 
 ---
 
@@ -1471,9 +1546,11 @@ control from a suggestion.
 do ##class(Workshop.Interop.Setup).Stop()
 ```
 
-### D.3.5 — the question from 0.5
+### D.3.5 — back to the question from 0.5
 
-Read out what you wrote at the start. You have now built both of them.
+You answered this at the end of Exercise C with what Modules A to C had given you. If what you wrote
+down at the start was about **evidence** — a record of what the agent did, or credentials it cannot
+leak — then this is where that half gets built, and you have now built it too.
 
 ---
 

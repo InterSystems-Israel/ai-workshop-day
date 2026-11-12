@@ -189,7 +189,8 @@ genuine alternative rather than a reworded retry.
 **Pick this if you want an argument you can take to a design review.**
 
 `langchain_intersystems` gives you `init_chat_model()` and `init_mcp_client()`, both driven from the
-IRIS Config Store you built in Module D.1. Point a LangChain agent at your own `/mcp/oncall`
+IRIS Config Store from Module D.1 (optional, so do that exercise first if you skipped it — it is
+about seven minutes). Point a LangChain agent at your own `/mcp/oncall`
 endpoint and make it do the Module B triage.
 
 ### What to build
@@ -250,8 +251,9 @@ the firewall"*, and the citation is real rather than invented.
 
 ### Why this is the right last option
 
-It closes the gap the workshop left open in Module D. You built approval, audit and traceability —
-all of which answer *"was this allowed?"*. None of them answers *"was this right?"*. A cited source
+It closes the gap the workshop leaves open. Approval, audit and traceability — Module C, and
+Module D if you went on to do it — all answer *"was this allowed?"*. None of them answers
+*"was this right?"*. A cited source
 is the cheapest available step toward the second question.
 
 ⚠️ RAG and vector search are **Part 3's subject**, and `%AI.RAG.*` was deliberately out of scope
