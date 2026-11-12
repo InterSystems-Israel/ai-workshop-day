@@ -1,0 +1,11 @@
+[mcp_servers.iris]
+enabled = true
+command = "iris-agentic-dev"
+args = ["mcp"]
+
+[mcp_servers.iris.env]
+IRIS_HOST = "localhost"
+IRIS_WEBPORT = "42773"
+IRIS_USERNAME = "_SYSTEM"
+IRIS_PASSWORD = "SYS"
+IRIS_NAMESPACE = "USER"
