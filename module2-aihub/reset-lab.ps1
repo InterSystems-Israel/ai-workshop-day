@@ -57,7 +57,7 @@ if (-not $Container) {
 if (-not $Container) { $Container = 'aiworkshop-iris' }
 # Joint workshop: the image is the one the container runs (not aihub-workshop:latest).
 $WorkshopImage = (& docker inspect -f '{{.Config.Image}}' $Container 2>$null)
-if (-not $WorkshopImage) { $WorkshopImage = 'ghcr.io/ari-glikman/ai-workshop-day' }
+if (-not $WorkshopImage) { $WorkshopImage = 'ghcr.io/intersystems-israel/ai-workshop-day' }
 
 # Report our own problems as one readable line and a non-zero exit code,
 # rather than a PowerShell error record wrapped around a docker message.

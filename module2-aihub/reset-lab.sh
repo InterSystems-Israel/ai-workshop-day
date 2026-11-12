@@ -52,7 +52,7 @@ env_container() {
 CONTAINER="${CONTAINER:-$(env_container)}"
 CONTAINER="${CONTAINER:-aiworkshop-iris}"
 # Joint workshop: the image is the one the container runs (not aihub-workshop:latest).
-WORKSHOP_IMAGE="$(docker inspect -f '{{.Config.Image}}' "$CONTAINER" 2>/dev/null || echo ghcr.io/ari-glikman/ai-workshop-day)"
+WORKSHOP_IMAGE="$(docker inspect -f '{{.Config.Image}}' "$CONTAINER" 2>/dev/null || echo ghcr.io/intersystems-israel/ai-workshop-day)"
 NAMESPACE="${NAMESPACE:-IRISAPP}"
 
 while [ $# -gt 0 ]; do

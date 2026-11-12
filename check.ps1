@@ -67,7 +67,7 @@ if ($dockerOk) {
     $up | ForEach-Object { Write-Host $_ }
     if ($LASTEXITCODE -ne 0) {
         if (($up -join " ") -match "(?i)denied|unauthorized|403") {
-            Fail "downloading the workshop image" "the image ghcr.io/ari-glikman/ai-workshop-day could not be downloaded - if you are logged in to ghcr.io with an old token, run  docker logout ghcr.io  and run check.ps1 again; otherwise check VPN/proxy/firewall"
+            Fail "downloading the workshop image" "the image ghcr.io/intersystems-israel/ai-workshop-day could not be downloaded - if you are logged in to ghcr.io with an old token, run  docker logout ghcr.io  and run check.ps1 again; otherwise check VPN/proxy/firewall"
         } else {
             Fail "docker compose up -d" "see the message above"
         }

@@ -43,7 +43,7 @@ containers or environments during the day.
 
 **3. Get the workshop files** (PowerShell, in a plain local folder - not OneDrive):
 ```
-git clone https://github.com/Ari-Glikman/ai-workshop-day.git
+git clone https://github.com/InterSystems-Israel/ai-workshop-day.git
 cd ai-workshop-day
 ```
 
