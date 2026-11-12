@@ -7,3 +7,5 @@
 *.pdf binary
 *.docx binary
 *.jpg binary
+# Files committed by module authors directly: keep them byte for byte.
+module1-agentic/config.toml -text
