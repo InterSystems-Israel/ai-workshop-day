@@ -22,28 +22,24 @@ containers or environments during the day.
 
 **2. Module 1 prework: iris-agentic-dev on your laptop**
 
-<div dir="rtl">
+1. Create a new folder `C:\Tools` and add it to the Windows PATH environment variable:
+   - Press the Windows key, type environment variables and click Edit the system environment variables.
+   - In System Properties, click Environment Variables…
+   - Under System variables, scroll to Path, select it and click Edit.
+   - Click New, type `C:\Tools` and press Enter.
+   - Click OK in every open dialog to save.
 
-1. צרו תיקייה חדשה `c:\Tools`. הוסיפו תיקייה זו למשתנה הסביבה PATH של Windows:
-   - לחצו על מקש Windows, הקלידו environment variables ולחצו על Edit the system environment variables.
-   - ב-System Properties, לחצו על Environment Variables…
-   - תחת System variables, גללו ל-Path, בחרו אותה ולחצו Edit
-   - לחצו New, הקלידו `C:\Tools`, ולחצו Enter.
-   - לחצו OK בכל תיבות הדו-שיח הפתוחות לשמירה.
-
-2. הורידו את `iris-agentic-dev-windows-x86_64.exe` מדף ה-Releases:
+2. Download `iris-agentic-dev-windows-x86_64.exe` from the Releases page:
    [Release v1.7.1 · intersystems-community/iris-agentic-dev](https://github.com/intersystems-community/iris-agentic-dev/releases/tag/v1.7.1)
 
-   שמרו את הקובץ ב-`c:\Tools` ושנו את שמו ל-`iris-agentic-dev.exe`.
-   פתחו Command Prompt חדש ואמתו שה-PATH עובד:
+   Save the file in `C:\Tools` and rename it to `iris-agentic-dev.exe`.
+   Open a new Command Prompt and check that the PATH works:
 
    ```
    iris-agentic-dev --version
    ```
 
-   אם מוצגת מספר גרסה, ה-PATH מוגדר כהלכה.
-
-</div>
+   If it shows a version number, the PATH is set correctly.
 
 **3. Get the workshop files** (PowerShell, in a plain local folder - not OneDrive):
 ```
