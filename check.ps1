@@ -45,9 +45,9 @@ if (Have code) {
 } else {
     Warn "VS Code: 'code' is not on the PATH, so the extensions could not be checked - make sure VS Code has the 'InterSystems ObjectScript Extension Pack', 'Jupyter' and 'OpenAI Codex'"
 }
-# Module 1 prework (you do it yourself, see module1-agentic): iris-agentic-dev.exe in C:\Tools, C:\Tools on the PATH.
+# Module 1 prework (you do it yourself, README step 2): iris-agentic-dev.exe in C:\Tools, C:\Tools on the PATH.
 if (Have iris-agentic-dev) { Ok "iris-agentic-dev $((iris-agentic-dev --version 2>$null) -join ' ') (module 1)" }
-else { Warn "iris-agentic-dev is not on the PATH - do the module 1 prework (download it to C:\Tools and add C:\Tools to the PATH), then open a NEW PowerShell" }
+else { Warn "iris-agentic-dev is not on the PATH - do the module 1 prework (download it to C:\Tools and add C:\Tools to the PATH - README step 2), then open a NEW PowerShell" }
 
 if ($dockerOk) {
     $haveImage = [bool](docker images -q (Select-String -Path compose.yaml -Pattern 'image:\s*\$\{IMAGE:-(.+)\}' | ForEach-Object { $_.Matches[0].Groups[1].Value }) 2>$null)

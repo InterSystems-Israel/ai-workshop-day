@@ -20,9 +20,30 @@ containers or environments during the day.
 - [VS Code](https://code.visualstudio.com) with the extensions **InterSystems ObjectScript Extension Pack**,
   **Jupyter** and **OpenAI Codex**
 
-**2. Module 1 prework** - follow Part 1 of `module1-agentic/IRIS_Agentic_Development_Workshop_v4_he.docx`:
-download `iris-agentic-dev.exe` into `C:\Tools`, add `C:\Tools` to the PATH, register the MCP server in
-`%USERPROFILE%\.codex\config.toml`.
+**2. Module 1 prework: iris-agentic-dev on your laptop**
+
+<div dir="rtl">
+
+1. צרו תיקייה חדשה `c:\Tools`. הוסיפו תיקייה זו למשתנה הסביבה PATH של Windows:
+   - לחצו על מקש Windows, הקלידו environment variables ולחצו על Edit the system environment variables.
+   - ב-System Properties, לחצו על Environment Variables…
+   - תחת System variables, גללו ל-Path, בחרו אותה ולחצו Edit
+   - לחצו New, הקלידו `C:\Tools`, ולחצו Enter.
+   - לחצו OK בכל תיבות הדו-שיח הפתוחות לשמירה.
+
+2. הורידו את `iris-agentic-dev-windows-x86_64.exe` מדף ה-Releases:
+   [Release v1.7.1 · intersystems-community/iris-agentic-dev](https://github.com/intersystems-community/iris-agentic-dev/releases/tag/v1.7.1)
+
+   שמרו את הקובץ ב-`c:\Tools` ושנו את שמו ל-`iris-agentic-dev.exe`.
+   פתחו Command Prompt חדש ואמתו שה-PATH עובד:
+
+   ```
+   iris-agentic-dev --version
+   ```
+
+   אם מוצגת מספר גרסה, ה-PATH מוגדר כהלכה.
+
+</div>
 
 **3. Get the workshop files** (PowerShell, in a plain local folder - not OneDrive):
 ```
