@@ -11,7 +11,7 @@ name: aiworkshop
 
 services:
   iris:
-    image: ${IMAGE:-ghcr.io/ari-glikman/ai-workshop-day:2026-11-11.1}
+    image: ${IMAGE:-ghcr.io/ari-glikman/ai-workshop-day:2026-11-12.1}
     container_name: aiworkshop-iris
     # The image was set up on a machine called "buildkitsandbox"; with any other name IRIS reports a fail-over
     # alert and the container turns unhealthy after a few minutes.
