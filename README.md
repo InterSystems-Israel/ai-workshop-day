@@ -65,8 +65,8 @@ On the day, start it again with `docker compose up -d` (in the same folder) - it
 
 Do the modules in order, each with its own guide:
 
-1. **Module 1** - `module1-agentic/`: `IRIS_Agentic_Development_Workshop_v4_he.docx`, then `AIB_Workshop_he_v2.docx`.
-   The AIB setup part ("admin") is already done in the container.
+1. **Module 1** - `module1-agentic/`: `Module 1 - IRIS_Agentic_Development_Workshop_hebrew.pdf`, then
+   `Module 1 - AIB_Workshop_hebrew.pdf`. The AIB setup part ("admin") is already done in the container.
 2. **Module 2** - `module2-aihub/README.md`, then `WORKBOOK.md`. For the API key: `copy .env.example .env` in
    **this** folder (the repository root), add the key, then `docker compose up -d --force-recreate iris`.
 3. **Module 3** - `module3-vector/Workshop Guide.docx` (Hebrew: `Workshop Guide - Hebrew.docx`).
